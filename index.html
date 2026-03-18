@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM DEPLOYMENT HUB // UNIVERSAL LTSC</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --border: #30363d;
+            --accent: #58a6ff;
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            --code-bg: #010409;
+            --terminal-green: #3fb950;
+            --warning-orange: #d29922;
+            --danger-red: #f85149;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 1000px; margin: auto; }
+        
+        header { 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 20px; 
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        h1 { color: var(--accent); margin: 0; font-family: 'Consolas', monospace; font-size: 1.8rem; }
+        .version { color: var(--text-dim); font-size: 0.8rem; }
+
+        .selector-box {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .select-group { display: flex; flex-direction: column; }
+        label { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+        
+        select {
+            background: var(--bg);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .section.visible { display: block; animation: slideUp 0.4s ease-out; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { color: var(--warning-orange); font-size: 1.2rem; margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        
+        pre {
+            background: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            color: var(--terminal-green);
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .copy-hint { font-size: 0.7rem; color: var(--text-dim); margin-top: -10px; margin-bottom: 10px; text-align: right; }
+
+        .warning-box {
+            background: rgba(210, 153, 34, 0.1);
+            border-left: 4px solid var(--warning-orange);
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .tool-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .tool-card b { color: var(--accent); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>UNIVERSAL DEPLOYMENT HUB</h1>
+            <div class="version">FOR WINDOWS 10 IOT ENTERPRISE LTSC // OPTIMIZED FOR ANY RIG</div>
+        </div>
+        <div style="text-align: right; color: var(--text-dim); font-size: 0.8rem;">
+            BUILD: 2026.03.18<br>STATUS: ACTIVE
+        </div>
+    </header>
+
+    <div class="selector-box">
+        <div class="select-group">
+            <label>Drive Type</label>
+            <select id="drive" onchange="refresh()">
+                <option value="ssd">Solid State (SSD)</option>
+                <option value="hdd">Mechanical (HDD)</option>
+            </select>
+        </div>
+        <div class="select-group">
+            <label>CPU Vendor</label>
+            <select id="cpu" onchange="refresh()">
+                <option value="intel">Intel (Core/Pentium)</option>
+                <option value="amd">AMD (Ryzen/Athlon)</option>
+            </select>
+        </div>
+        <div class="select-group">
+            <label>Graphics Card</label>
+            <select id="gpu" onchange="refresh()">
+                <option value="none">Integrated (No Dedicated GPU)</option>
+                <option value="nvidia">NVIDIA GeForce</option>
+                <option value="amd_gpu">AMD Radeon</option>
+            </select>
+        </div>
+        <div class="select-group">
+            <label>Media</label>
+            <select id="media" onchange="refresh()">
+                <option value="stash">Stash Method (No USB)</option>
+                <option value="usb">USB Flashdrive</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section visible">
+        <h2>PHASE 0: HARDWARE RECON (BEFORE WIPE)</h2>
+        <p>Do not skip this. Without these, you will be stranded with no internet or no drive detection.</p>
+        <div class="warning-box" id="driverAdvice"></div>
+        <ul>
+            <li>Open <b>Device Manager</b>. Right-click your Network Adapter > Properties > Details > <b>Hardware IDs</b>.</li>
+            <li>Note down the ID (e.g., <i>VEN_8086&DEV_15D8</i>). Download the driver for this ID to your stash.</li>
+        </ul>
+    </div>
+
+    <div class="section visible">
+        <h2>PHASE 1: THE INSTALLATION BRIDGE</h2>
+        <div id="prepSteps"></div>
+        <pre id="setupCmd">diskpart
+list volume (Identify the letter of INSTALLER)
+exit
+D: (Change to your letter)
+setup.exe</pre>
+    </div>
+
+    <div class="section visible">
+        <h2>PHASE 2: THE POWERSHELL SURGERY</h2>
+        <p>Once on the desktop, open <b>PowerShell (Admin)</b>. Run these blocks in order:</p>
+        
+        <label>1. ACTIVATION (MAS)</label>
+        <pre>irm https://get.activated.win | iex</pre>
+
+        <label>2. THE WINGET FORCE-FEED (LTSC FIX)</label>
+        <div class="copy-hint">Copy/Paste all at once</div>
+        <pre>$d="C:\WFix"; mkdir $d; cd $d
+Invoke-WebRequest -Uri "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -OutFile "1.appx"
+Invoke-WebRequest -Uri "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.8.6/Microsoft.UI.Xaml.2.8.x64.appx" -OutFile "2.appx"
+Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile "3.msixbundle"
+Add-AppxPackage -Path ".\1.appx"
+Add-AppxPackage -Path ".\2.appx"
+Add-AppxPackage -Path ".\3.msixbundle"
+cd ..; rm -r $d; winget --version</pre>
+
+        <label>3. PERFORMANCE TUNING</label>
+        <pre id="perfCmd"></pre>
+    </div>
+
+    <div class="section visible">
+        <h2>PHASE 3: THE BUTTER-SMOOTH SUITE</h2>
+        <p>Universal apps optimized for speed. Copy into PowerShell:</p>
+        <pre id="softCmd"></pre>
+        <div class="tool-grid">
+            <div class="tool-card"><b>Brave:</b> Best for privacy + speed. Built-in adblock.</div>
+            <div class="tool-card"><b>SumatraPDF:</b> Instant PDF opening. Minimalist.</div>
+            <div class="tool-card"><b>ImageGlass:</b> Replaces slow Windows Photos app.</div>
+            <div class="tool-card"><b>Everything:</b> Essential for HDD. Instant file search.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function refresh() {
+        const drive = document.getElementById('drive').value;
+        const cpu = document.getElementById('cpu').value;
+        const gpu = document.getElementById('gpu').value;
+        const media = document.getElementById('media').value;
+
+        // Driver Advice
+        let advice = `<b>STORAGE WARNING:</b> Since you are on ${cpu.toUpperCase()}, you must download the <b>${cpu === 'intel' ? 'Intel RST (Rapid Storage Technology)' : 'AMD RAID/NVMe'}</b> F6 drivers. Place the extracted folder in your stash. If the drive list is empty during install, click 'Load Driver'.`;
+        document.getElementById('driverAdvice').innerHTML = advice;
+
+        // Prep Steps
+        let prep = "";
+        if (media === 'stash') {
+            prep = "<p>1. Shrink C: by 10GB. Format as <b>INSTALLER</b> (NTFS).<br>2. Copy ISO files + Drivers folder to the new partition.<br>3. Restart > Troubleshoot > Advanced > Command Prompt.</p>";
+        } else {
+            prep = "<p>1. Use <b>Rufus</b> to create a GPT/UEFI bootable LTSC USB.<br>2. Copy Drivers folder to the USB.<br>3. Boot from USB (usually F12/F11/Esc).</p>";
+        }
+        document.getElementById('prepSteps').innerHTML = prep;
+
+        // Performance Command
+        let perf = "";
+        if (drive === 'hdd') {
+            perf = `# HDD LTSC OPTIMIZATION\n# Stop Disk Grinding\n$s=@("SysMain","WSearch","DiagTrack"); foreach($n in $s){Stop-Service $n;Set-Service $n -StartupType Disabled}\n# Ultimate Power Plan\npowercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61\n# Decapitate Edge\n$e="\${env:ProgramFiles(x86)}\\Microsoft\\Edge"; takeown /f $e /r /d y; icacls $e /grant administrators:F /t; rm -r $e -Force`;
+        } else {
+            perf = `# SSD LTSC OPTIMIZATION\n# Ultimate Power Plan\npowercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61\n# Decapitate Edge\n$e="\${env:ProgramFiles(x86)}\\Microsoft\\Edge"; takeown /f $e /r /d y; icacls $e /grant administrators:F /t; rm -r $e -Force`;
+        }
+        document.getElementById('perfCmd').innerText = perf;
+
+        // Software Command
+        let soft = `winget install Microsoft.VCRedist.2015+.x64 --silent\nwinget install Brave.Brave --silent\nwinget install Notepad++.Notepad++ --silent\nwinget install SumatraPDF.SumatraPDF --silent\nwinget install DuongDieuPhap.ImageGlass --silent\nwinget install ONLYOFFICE.DesktopEditors --silent\nwinget install 7zip.7zip --silent\nwinget install VideoLAN.VLC --silent\nwinget install voidtools.Everything --silent\nwinget install Discord.Discord --silent`;
+        if (gpu === 'nvidia') soft += `\nwinget install Nvidia.GeForceExperience --silent`;
+        if (gpu === 'amd_gpu') soft += `\nwinget install AMD.Software --silent`;
+        document.getElementById('softCmd').innerText = soft;
+    }
+
+    refresh();
+</script>
+
+</body>
+</html>
